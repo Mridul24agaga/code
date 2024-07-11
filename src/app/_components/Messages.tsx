@@ -74,7 +74,7 @@ const Messages = ({ messages, isLoading }: { messages: any[], isLoading: boolean
 
                 <Button ghost className="border-none" onClick={() => {
 
-                  setMessageToShare(message?.content);
+                  setMessageToShare(message.content);
 
                   setOpenShareModal(true);
 
