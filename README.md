@@ -4,7 +4,7 @@
 
 Welcome to the Next-Gemini-ChatApp! This project is a full stack chatbot application built using modern web development technologies. It uses Next.js for the frontend and integrates the Gemini API 
 to provide chatbot functionalities. The app is designed to offer a seamless and interactive user experience. Along with chat functionality, users can also view detailed histories of each chat session conducted in 
-the past.
+the past. The user also has the option to delete chats, copy messages by assistant of a particular chat as well as share mesaages by assistant directly in WhatsApp and twitter.
 
 ## Technologies Used
 
