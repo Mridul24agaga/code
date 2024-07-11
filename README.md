@@ -16,6 +16,10 @@ the past.
 - **Zustand**: A small, fast state-management library.
 - **Clerk**: Authentication service for managing user sessions and identities.
 
+## Demo Video of the Application
+
+https://github.com/somenath203/Next-Gemini-ChatApp/assets/81456073/9253c599-a13e-4006-a59a-d9de8631cffc
+
 ## Live Preview
 
 Click here to open the application: https://next-gemini-chat-app.vercel.app/
