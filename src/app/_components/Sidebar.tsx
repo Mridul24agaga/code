@@ -1,171 +1,141 @@
-import { Plus, Trash2 } from 'lucide-react';
-import { Spin, message } from "antd";
-import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+'use client'
 
-import { deleteChat, getAllChatsByUserId } from "@/actions/chats";
-import chatsGlobalStore from "@/store/chats-store";
-import usersGlobalStore from "@/store/users-store";
+import React, { useEffect, useState } from "react"
+import { Plus, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Spin, message } from "antd"
+import classNames from "classnames"
 
+import { deleteChat, getAllChatsByUserId } from "@/actions/chats"
+import chatsGlobalStore from "@/store/chats-store"
+import usersGlobalStore from "@/store/users-store"
 
 const Sidebar = () => {
+  const [hoveredChatId, setHoveredChatId] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
+  const [loadingChatDelete, setLoadingChatDelete] = useState<boolean>(false)
+  const [isOpen, setIsOpen] = useState<boolean>(true)
 
-  const [hoveredChatId, setHoveredChatId] = useState<string>("");
-
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const [loadingChatDelete, setLoadingChatDelete] = useState<boolean>(false);
-
-  const { loggedInUserData } = usersGlobalStore() as any;
-
-  const { userChats, setUserChats, selectedChat, setSelectedChat }: any = chatsGlobalStore();
+  const { loggedInUserData } = usersGlobalStore() as any
+  const { userChats, setUserChats, selectedChat, setSelectedChat }: any = chatsGlobalStore()
 
   const getAllChatsOfAuthenticatedUser = async () => {
-
     try {
-
-      setLoading(true);
-
-      const response = await getAllChatsByUserId(loggedInUserData._id);
-
+      setLoading(true)
+      const response = await getAllChatsByUserId(loggedInUserData._id)
       if (response.success) {
-
-        setUserChats(response.data);
-
+        setUserChats(response.data)
       } else {
-
-        message.error('Something went wrong!! Please try again!!');
-
+        message.error('Something went wrong! Please try again.')
       }
     } catch (error) {
-
-      message.error('Something went wrong!! Please try again!!');
-
+      message.error('Something went wrong! Please try again.')
     } finally {
-
-      setLoading(false);
-
+      setLoading(false)
     }
-  };
-
+  }
 
   const deleteChatHandler = async (chatId: string, event: React.MouseEvent) => {
-
-    event.stopPropagation();
-    
+    event.stopPropagation()
     try {
-
-      setLoadingChatDelete(true);
-
-      const response = await deleteChat(chatId);
-
+      setLoadingChatDelete(true)
+      const response = await deleteChat(chatId)
       if (response.success) {
-
         const updatedChatHistory = userChats.filter(
           (chat: any) => chat._id !== chatId
-        );
-
-        setUserChats(updatedChatHistory);
-        
+        )
+        setUserChats(updatedChatHistory)
         if (selectedChat?._id === chatId) {
-
-          setSelectedChat(null);
-
+          setSelectedChat(null)
         }
-
       }
-      
     } catch (error: any) {
-
-      message.error(error.message);
-      
+      message.error(error.message)
     } finally {
-
-      setLoadingChatDelete(false);
-
+      setLoadingChatDelete(false)
     }
-  };
+  }
 
   useEffect(() => {
-    getAllChatsOfAuthenticatedUser();
-  }, []);
-  
+    getAllChatsOfAuthenticatedUser()
+  }, [])
 
   return (
-    <div className="w-80 h-full flex flex-col gap-3 justify-between bg-sidebarcolor p-5">
-      
+    <div className={classNames(
+      "h-full flex flex-col justify-between bg-black text-white transition-all duration-300 ease-in-out",
+      isOpen ? "w-80" : "w-16"
+    )}>
       <div className="flex-1 overflow-y-auto">
-
-        <div 
-          className='flex items-center justify-center gap-2 border border-gray-200 border-solid text-gray-200 p-2 rounded-sm w-max text-sm cursor-pointer'
-          onClick={() => {
-
-            setSelectedChat(null);
-
-          }}
-        >
-          <Plus size={15} />
-          <span>New Chat</span>
+        <div className="flex items-center justify-between p-4">
+          {isOpen && <h2 className="text-xl font-bold">Chats</h2>}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 rounded-full hover:bg-gray-800 transition-colors duration-200"
+            aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
+          >
+            {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+          </button>
         </div>
 
-        <div className="flex flex-col gap-3 mt-7">
-          <h1 className="text-sm text-gray-300 font-bold p-2">
-            Your Chat History
-          </h1>
+        <div className="px-4 mb-4">
+          <button
+            className='flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-md w-full text-sm transition-colors duration-200'
+            onClick={() => setSelectedChat(null)}
+          >
+            <Plus size={15} />
+            {isOpen && <span>New Chat</span>}
+          </button>
+        </div>
 
-          {loading && <Spin size='large' className='h-60 flex items-center justify-center sidebar-spinner' />}
+        <div className="flex flex-col gap-2 px-4">
+          {isOpen && (
+            <h3 className="text-sm text-gray-400 font-semibold mb-2">
+              Chat History
+            </h3>
+          )}
+
+          {loading && <Spin size='large' className='h-60 flex items-center justify-center' />}
           
-          {!loading && userChats?.length === 0 && <p className='text-gray-400 text-sm p-2'>Nothing to Show</p>}
+          {!loading && Array.isArray(userChats) && userChats.length === 0 && isOpen && (
+            <p className='text-gray-400 text-sm'>No chats yet</p>
+          )}
           
-          {!loading && userChats?.length !== 0 && userChats?.map((chat: any) => (
+          {!loading && Array.isArray(userChats) && userChats.length > 0 && userChats.map((chat: any) => (
             <div
+              key={chat._id}
               className={classNames(
-                "cursor-pointer flex justify-between items-center p-2 hover:bg-gray-500 hover:bg-opacity-30",
+                "cursor-pointer flex justify-between items-center p-2 rounded-md hover:bg-gray-800 transition-colors duration-200",
                 {
-                  "bg-gray-600 rounded bg-opacity-30": selectedChat?._id === chat._id,
+                  "bg-gray-700": selectedChat?._id === chat._id,
                 }
               )}
               onMouseEnter={() => setHoveredChatId(chat._id)}
               onMouseLeave={() => setHoveredChatId("")}
-              onClick={() => {
-                setSelectedChat(chat);
-              }}
+              onClick={() => setSelectedChat(chat)}
             >
-              <span className="text-sm text-gray-300">
-                {chat.title.split(' ').length <= 3 ? chat.title : chat.title.split(' ').slice(0, 3).join(' ') + ' . . . .'}
+              <span className="text-sm truncate flex-1">
+                {isOpen ? chat.title : chat.title.charAt(0)}
               </span>
 
-              {hoveredChatId === chat._id && (
+              {isOpen && hoveredChatId === chat._id && (
                 loadingChatDelete ? 
-                  <Spin className='sidebar-spinner' size='default' /> 
+                  <Spin size='small' /> 
                   : 
-                  <Trash2
-                    size={15}
-                    className="text-red-400"
+                  <button
+                    aria-label="Delete chat"
                     onClick={(e) => deleteChatHandler(chat._id, e)}
-                  />
+                  >
+                    <Trash2
+                      size={15}
+                      className="text-red-400 hover:text-red-300"
+                    />
+                  </button>
               )}
             </div>
           ))}
         </div>
       </div>
-
-      <div className="flex flex-col gap-1 p-3">
-
-        <span className="text-gray-400 text-xs">
-          Designed & Developed by
-        </span>
-
-        <hr className='border border-solid border-gray-500 w-10' />
-
-        <span className="text-gray-400 text-xs">
-          Somenath Choudhury
-        </span>
-
-      </div>
-
     </div>
   )
-};
+}
 
-export default Sidebar;
+export default Sidebar

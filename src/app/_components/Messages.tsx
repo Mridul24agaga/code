@@ -42,7 +42,7 @@ const Messages = ({ messages, isLoading }: { messages: any[], isLoading: boolean
     <div className="flex flex-col gap-7 text-gray-300 mt-7 h-[75vh] overflow-y-auto scroll-smooth" ref={messagesRef}>
 
       {messages?.length === 0 && <div className="h-full flex items-center justify-center">
-        <p className="p-5 border border-gray-600 rounded text-gray-400 text-center text-sm lg:text-base">Hey, <span className="font-bold">{loggedInUserData?.fullname}</span>, I am <span className="font-semibold">Next Gemini ChatApp</span>. How can I help you today?</p>
+        <p className="p-5 border border-gray-600 rounded text-gray-400 text-center text-sm lg:text-base">Hey, <span className="font-bold">{loggedInUserData?.fullname}</span>, I am <span className="font-semibold">SC</span>. How can I help you today?</p>
       </div>}
 
       {messages?.map((message) => (
